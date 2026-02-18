@@ -15,12 +15,27 @@ class Olist:
             Prints "pong" to confirm the method is callable.
     """
     def get_data(self):
-        """
-        This function returns a Python dict.
-        Its keys should be 'sellers', 'orders', 'order_items' etc...
-        Its values should be pandas.DataFrames loaded from csv files
-        """
-        pass  # YOUR CODE HERE
+
+        csv_path = Path("~/.workintech/olist/data/csv").expanduser()
+
+        file_paths = sorted(csv_path.iterdir())
+
+
+        names = []
+        for file in file_paths:
+            name = file.name.removesuffix(".csv")
+            name = name.removesuffix("_dataset")
+            if name.startswith("olist_"):
+                name = name[len("olist_"):]
+
+            names.append(name)
+
+        dataframes = [pd.read_csv(file) for file in file_paths]
+        data = dict(zip(names, dataframes))
+
+        return data
+
+
 
     def ping(self):
         """
