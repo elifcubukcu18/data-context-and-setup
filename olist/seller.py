@@ -142,7 +142,30 @@ class Seller:
         'seller_id', 'share_of_five_stars', 'share_of_one_stars', 'review_score'
         """
 
-        pass  # YOUR CODE HERE
+        reviews = self.data['order_reviews'].copy()
+        order_items = self.data['order_items'].copy()
+
+        # Merge reviews with order items to get seller_id
+        reviews_sellers = reviews.merge(order_items, on='order_id')
+
+        # Compute review score and share of one and five stars
+        def compute_review_score(review_score):
+            return review_score.mean()
+
+        def compute_share_of_five_stars(review_score):
+            return (review_score == 5).mean()
+
+        def compute_share_of_one_stars(review_score):
+            return (review_score == 1).mean()
+
+        df = reviews_sellers.groupby('seller_id').agg(
+             review_score = ('review_score', compute_review_score),
+            share_of_five_stars = ('review_score', compute_share_of_five_stars),
+            share_of_one_stars = ('review_score', compute_share_of_one_stars)
+            ).reset_index()
+
+
+        return df
 
     def get_training_data(self):
         """
